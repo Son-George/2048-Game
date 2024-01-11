@@ -21,6 +21,10 @@ Tile_space = [[(220, 45),(410, 45), (600, 45), (790, 45)],
               [(220, 425), (410,425), (600, 425), (790, 425)],
               [(220, 615), (410, 615), (600, 615), (790, 615)]]
 
+Image_Locations = [[0, 0, 0, 0],
+                   [0, 0, 0, 0],
+                   [0, 0, 0, 0],
+                   [0, 0, 0, 0]]
 # Values to move the friends tiles
 Speed = 10
 Frames = 19
@@ -50,8 +54,8 @@ Friend = [pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Ga
         pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Randy_10.jpg").convert_alpha(),
         pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Hagrid_11.jpg").convert_alpha(),]
 
-#State Key [1: Starting Screen, 2: Game Play, 3: End Screen, 4: Pause Screen]
-Game_State = 1
+# State Key [1: Starting Screen, 2: Game Play, 3: End Screen, 4: Pause Screen]
+# Game_State = 1
 
 
 
@@ -112,37 +116,18 @@ def Game_Over():
             return True
 
 
-def Movement():
-    False
 
-def Draw(Characters):
+def Draw():
     
     Window.blit(pygame.transform.scale(Background, (WIDTH, Height)), (floor,floor))
     Window.blit(pygame.transform.scale(Grid, (190*4, 190*4)), Tile_space[0][0])
 
-    # Test Screen to check if all frined come out
-    #Window.blit(pygame.transform.scale(Friend_1, Box_Size), Tile_space[0])
-    #Window.blit(pygame.transform.scale(Friend_2, Box_Size), Tile_space[1])
-    #Window.blit(pygame.transform.scale(Friend_3, Box_Size), Tile_space[2])
-    #Window.blit(pygame.transform.scale(Friend_4, Box_Size), Tile_space[3])
-    #Window.blit(pygame.transform.scale(Friend_5, Box_Size), Tile_space[4])
-    #Window.blit(pygame.transform.scale(Friend_6, Box_Size), Tile_space[5])
-    #Window.blit(pygame.transform.scale(Friend_7, Box_Size), Tile_space[6])
-    #Window.blit(pygame.transform.scale(Friend_8, Box_Size), Tile_space[7])
-    #Window.blit(pygame.transform.scale(Friend_9, Box_Size), Tile_space[8])
-    #Window.blit(pygame.transform.scale(Friend_10, Box_Size), Tile_space[9])
-    #Window.blit(pygame.transform.scale(Friend_11, Box_Size), Tile_space[10])
-    #Window.blit(pygame.transform.scale(Friend_1, Box_Size), Tile_space[11])
-    #Window.blit(pygame.transform.scale(Friend_2, Box_Size), Tile_space[12])
-    #Window.blit(pygame.transform.scale(Friend_3, Box_Size), Tile_space[13])
-    #Window.blit(pygame.transform.scale(Friend_4, Box_Size), Tile_space[14])
-    #Window.blit(pygame.transform.scale(Friend_5, Box_Size), Tile_space[15])
-    #
-
-    # Iterate through the object and prints them to the screen
-    for image in Characters:
-        Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), (image.X, image.Y))
-       # Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), Tile_space[image.Row][image.Col])   # Tile_Space[Row][Col]
+    # Iterate through the array that contains 
+    for col in Image_Locations:
+        for image in col:
+            if image != floor:
+                Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), (image.X, image.Y))
+         # Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), Tile_space[image.Row][image.Col])   # Tile_Space[Row][Col]
 
     pygame.display.update()
 
@@ -177,73 +162,70 @@ def Start_Screen():
 
 
 
-def Game_Movement(key, Friend):
-    if key[pygame.K_LEFT]:
-        for me in Friend:
-            if (me.Col - 1) >= 0:
-                temp_Pos = me.Col
-                me.Old_Col= temp_Pos
-                me.Col -= 1
-
-                Move_Friend(Friend, me, key)
-
-                # me.X += 1 
-                # for later: make an algorithem that moves each item at the highest pos one up 
-                # and proceed down the list
-                # then the next item checks if there is a box in front of it
-                # if they are the same size the block at the edge/wall changes to next friend and erased the other friend
-                
-
-    elif key[pygame.K_RIGHT]:
-        for me in Friend:
-            if (me.Col + 1) <= 3:
-                temp_Pos = me.Col
-                me.Old_Col = me.Col
-                me.Col += 1
-
-                Move_Friend(Friend, me, key)
-                
-            # while Tile_space[me.Col][me.Row] != (me.X, me.Y):
+def Game_Movement(key):
+    Image_Moved = False         # variable to check if an imaged moved
+    if key[pygame.K_LEFT]:          # Only moves the Col position the row position stays the same
+        
+        for row in Image_Locations[:]:
+            position = 0            # since we are moving to the left the most most position is 0 in the col position
+            for player in row[:]:
+                if player != 0:     # check if the position of the Image_location has an image
+                    Image_Moved = True
+                    player.Col = position       # moves the left most image to the left most position and goes through the row
+                    position += 1               # since an image is already at the left most position we move one position to the right (+1)
+                    Image_Locations[player.Row][player.Old_Col] = 0     # changes the image at this current [row][col] place to zero since the image moved to a different position
+                    Image_Locations[player.Row][player.Col] = player    # moves the player/image to the new col position
+                    
 
 
-    elif key[pygame.K_UP]:
-        for me in Friend:
-            if (me.Row - 1) >= 0:
-                temp_Pos = me.Row
-                me.Old_Row = me.Row
-                me.Row -= 1
+    elif key[pygame.K_RIGHT]:         # Only moves the Col position the row position stays the same
+        
+        for row in Image_Locations[:]:
+            position = 3            # since we are moving to the Right the most most position is 3 in the col position
+            row.reverse()
+            for player in row:
+                if player != 0:     # check if the position of the Image_location has an image
+                    Image_Moved = True
+                    player.Col = position       # moves the left most image to the Right most position and goes through the row
+                    position -= 1               # since an image is already at the Right most position we move one position to the left (-1)
+                    Image_Locations[player.Row][player.Old_Col] = 0     # changes the image at this current [row][col] place to zero since the image moved to a different position
+                    Image_Locations[player.Row][player.Col] = player    # moves the player/image to the new col position
+                    
+                    
+    if Image_Moved:
+        Move_Friend(key)
+                    
 
-                Move_Friend(Friend, me, key)
-
-    elif key[pygame.K_DOWN]:
-        for me in Friend:
-            if (me.Row + 1) <= 3:
-                temp_Pos = me.Row
-                me.Old_Row = me.Row
-                me.Row += 1
-
-                Move_Friend(Friend, me, key)
 
     
-def Move_Friend(Friend, me, Direction):
-    # while Tile_space[Friend.Col][Friend.Row] != (Friend.X, Friend.Y):
-    for i in range(10):
-        if Direction[pygame.K_LEFT]:     # if the left key was detected it moves the image 19 frames to the left
-            me.X -= Frames
-            Draw(Friend)
+def Move_Friend(Direction):
+    
+    for row in Image_Locations[:]:              # iterates through each row of the image_location
+        for image in row:   # iterates through each element in the row of image_location
+
+            if image != 0:                      # checks if the current item is an image
+                Tiles_Moved = abs(image.Col - image.Old_Col) + abs(image.Row - image.Old_Row)   # checks how many tiles the image change from its old position
+                image.Old_Row = image.Row
+                image.Old_Col = image.Col
+                for i in range(10 * Tiles_Moved):    # the loop iterates 10 times for one tile space and is multiplied by how many 
+                    if Direction[pygame.K_LEFT]:     # if the left key was detected it moves the image 19 frames to the left
+                        image.X -= Frames
+                        Draw()
+
+                    elif Direction[pygame.K_RIGHT]:    # if the Right key was detected it moves the image 19 frames to the right
+                        image.X += Frames
+                        Draw()
+
+                    elif Direction[pygame.K_UP]:    # if the Up key was detected it moves the image 19 frames up
+                        image.Y -= Frames
+                        Draw()
 
 
-        elif Direction[pygame.K_RIGHT]:    # if the Right key was detected it moves the image 19 frames to the right
-            me.X += Frames
-            Draw(Friend)
-            
-        elif Direction[pygame.K_UP]:    # if the Up key was detected it moves the image 19 frames up
-                me.Y -= Frames
-                Draw(Friend)
+                    elif Direction[pygame.K_DOWN]:    # if the Down key was detected it moves the image 19 frames down
+                        image.Y += Frames
+                        Draw()
 
-        elif Direction[pygame.K_DOWN]:    # if the Down key was detected it moves the image 19 frames down
-                me.Y += Frames
-                Draw(Friend)
+        
 
 def main():
     
@@ -265,14 +247,15 @@ def main():
     Row = random.randint(0,3)
     Col = random.randint(0,3)
 
-    new_character = Friends_Position(Row, Col, 3)     # (x-position, y-position, old x-position, old y-position, Image of friend)
+    new_character = Friends_Position(Row, Col, 2)     # (x-position, y-position, old x-position, old y-position, Image of friend)
+    Image_Locations[Row][Col] = new_character        # Stores the friend in an array where its [row][col] corresponde to its location on the grid
     Characters.append(new_character)
 
-    Draw(Characters)
+    Draw()
 
     while Run:
 
-        clock.tick(10)          # Runs 30 frames per second   clock.tick(Frames per second)
+        clock.tick(30)          # Runs 30 frames per second   clock.tick(Frames per second)
 
         for event in pygame.event.get():   # pygame.event.get() gets any key pressed
             if event.type == pygame.QUIT:
@@ -281,19 +264,19 @@ def main():
         
         #Checks if there is avalid position to print 
         
-        while Moved:
+        #while Moved:
 
             #new_position = random.randint()
-            for tile in Characters:
-                if tile == 1:
-                    checking_position = False
+            #for tile in Characters:
+                #if tile == 1:
+                    #checking_position = False
                 
         # Gets the Keyboard Input
         key_input = pygame.key.get_pressed()
 
         # Checks if an arrow key is pressed to move the friends
         if key_input[pygame.K_DOWN] or key_input[pygame.K_UP] or key_input[pygame.K_LEFT] or key_input[pygame.K_RIGHT]:
-            Game_Movement(key_input, Characters)
+            Game_Movement(key_input)
 
         # Excape is pressed and pauses the game
         elif key_input[pygame.K_ESCAPE]:
@@ -303,7 +286,7 @@ def main():
             return False
 
         
-
+        Draw()
 
 
 
