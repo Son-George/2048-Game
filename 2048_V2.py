@@ -177,7 +177,7 @@ def Game_Movement(key):
 
     elif key[pygame.K_RIGHT]:         # Only moves the Col position the row position stays the same
         
-        for row in range(3):
+        for row in range(4):
             position = 3            # since we are moving to the Right the most most position is 3 in the col position
             for col in range(3, -1, -1):
                 player = Image_Locations[row][col]
@@ -215,6 +215,8 @@ def Game_Movement(key):
                     Image_Locations[player.Row][player.Col] = player
     if Image_Moved:
         Move_Friend(key)
+        return True
+    return False
                     
 
 def Move_Friend(Direction):
@@ -244,6 +246,24 @@ def Move_Friend(Direction):
                         Draw()
 
         
+def Add_Image():
+    Open_Space = False
+
+    for row in Image_Locations:
+        for image in row:
+            if image == 0:
+                Open_Space = True
+                break
+
+    while Open_Space:
+        row = random.randint(0, 3)
+        col = random.randint(0, 3)
+        if Image_Locations[row][col] == 0:
+            Image_Locations[row][col] = Friends_Position(row, col, 0)
+            Open_Space = False
+            return True
+
+    return False
 
 def main():
     
@@ -253,43 +273,33 @@ def main():
 
     Run = Start_Screen()    # Creates the starting screen and waits for the user to start 
 
-    Characters = []
-
     Row = random.randint(0,3)
     Col = random.randint(0,3)
 
     new_character = Friends_Position(Row, Col, 2)     # (x-position, y-position, old x-position, old y-position, Image of friend)
-    Image_Locations[0][0] = Friends_Position(0, 0, 3)
-    Image_Locations[3][3] = Friends_Position(3, 3, 1)
     Image_Locations[Row][Col] = new_character        # Stores the friend in an array where its [row][col] corresponde to its location on the grid
-    Characters.append(new_character)
+ 
 
     Draw()
 
     while Run:
 
-        #clock.tick(30)          # Runs 30 frames per second   clock.tick(Frames per second)
+        clock.tick(30)          # Runs 30 frames per second   clock.tick(Frames per second)
 
         for event in pygame.event.get():   # pygame.event.get() gets any key pressed
             if event.type == pygame.QUIT:
                 Run = False
                 break
         
-        #Checks if there is avalid position to print 
-        
-        #while Moved:
-
-            #new_position = random.randint()
-            #for tile in Characters:
-                #if tile == 1:
-                    #checking_position = False
                 
         # Gets the Keyboard Input
         key_input = pygame.key.get_pressed()
 
         # Checks if an arrow key is pressed to move the friends
         if key_input[pygame.K_DOWN] or key_input[pygame.K_UP] or key_input[pygame.K_LEFT] or key_input[pygame.K_RIGHT]:
-            Game_Movement(key_input)
+            ADD = Game_Movement(key_input)
+            if ADD:
+                Add_Image()
 
         # Excape is pressed and pauses the game
         elif key_input[pygame.K_ESCAPE]:
