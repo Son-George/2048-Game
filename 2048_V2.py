@@ -110,16 +110,17 @@ def Game_Over():
             return True
 
 def Reset_Game():
-    Image_Locations = [[0, 0, 0, 0],
-                   [0, 0, 0, 0],
-                   [0, 0, 0, 0],
-                   [0, 0, 0, 0]]
+    for row in range(4):
+        for col in range(4):
+            Image_Locations[row][col] = 0
     
     Row = random.randint(0,3)
     Col = random.randint(0,3)
 
     new_character = Friends_Position(Row, Col, 2)     # (x-position, y-position, old x-position, old y-position, Image of friend)
     Image_Locations[Row][Col] = new_character        # Stores the friend in an array where its [row][col] corresponde to its location on the grid
+
+    Draw()
 
 def Draw():
     
