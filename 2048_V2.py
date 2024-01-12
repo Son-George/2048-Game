@@ -54,9 +54,6 @@ Friend = [pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Ga
         pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Randy_10.jpg").convert_alpha(),
         pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Hagrid_11.jpg").convert_alpha(),]
 
-# State Key [1: Starting Screen, 2: Game Play, 3: End Screen, 4: Pause Screen]
-# Game_State = 1
-
 
 
 class Friends_Position:
@@ -68,9 +65,6 @@ class Friends_Position:
         self.Old_Row = Row
         self.Old_Col = Col
         self.Friend = Friend_Number       #Image of which friend it is
-
-
-
 
 
 def pause():
@@ -125,7 +119,7 @@ def Draw():
     # Iterate through the array that contains 
     for col in Image_Locations:
         for image in col:
-            if image != floor:
+            if image != 0:
                 Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), (image.X, image.Y))
          # Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), Tile_space[image.Row][image.Col])   # Tile_Space[Row][Col]
 
@@ -163,12 +157,15 @@ def Start_Screen():
 
 
 def Game_Movement(key):
+
     Image_Moved = False         # variable to check if an imaged moved
+
     if key[pygame.K_LEFT]:          # Only moves the Col position the row position stays the same
         
-        for row in Image_Locations[:]:
+        for row in range(4):
             position = 0            # since we are moving to the left the most most position is 0 in the col position
-            for player in row[:]:
+            for col in range(4):
+                player = Image_Locations[row][col]
                 if player != 0:     # check if the position of the Image_location has an image
                     Image_Moved = True
                     player.Col = position       # moves the left most image to the left most position and goes through the row
@@ -180,18 +177,42 @@ def Game_Movement(key):
 
     elif key[pygame.K_RIGHT]:         # Only moves the Col position the row position stays the same
         
-        for row in Image_Locations[:]:
+        for row in range(3):
             position = 3            # since we are moving to the Right the most most position is 3 in the col position
-            row.reverse()
-            for player in row:
+            for col in range(3, -1, -1):
+                player = Image_Locations[row][col]
                 if player != 0:     # check if the position of the Image_location has an image
                     Image_Moved = True
                     player.Col = position       # moves the left most image to the Right most position and goes through the row
                     position -= 1               # since an image is already at the Right most position we move one position to the left (-1)
                     Image_Locations[player.Row][player.Old_Col] = 0     # changes the image at this current [row][col] place to zero since the image moved to a different position
                     Image_Locations[player.Row][player.Col] = player    # moves the player/image to the new col position
-                    
-                    
+
+    elif key[pygame.K_DOWN]:         # Only moves the Col position the row position stays the same
+
+        for col in range(3, -1, -1):
+            position = 3
+            for row in range(3, -1, -1):
+                player = Image_Locations[row][col]
+                if player != 0:
+                    Image_Moved = True
+                    player.Row = position
+                    position -= 1
+                    Image_Locations[player.Old_Row][player.Col] = 0
+                    Image_Locations[player.Row][player.Col] = player
+
+    elif key[pygame.K_UP]:         # Only moves the Col position the row position stays the same
+
+        for col in range(4):
+            position = 0
+            for row in range(4):
+                player = Image_Locations[row][col]
+                if player != 0:
+                    Image_Moved = True
+                    player.Row = position
+                    position += 1
+                    Image_Locations[player.Old_Row][player.Col] = 0
+                    Image_Locations[player.Row][player.Col] = player
     if Image_Moved:
         Move_Friend(key)
                     
@@ -220,7 +241,6 @@ def Move_Friend(Direction):
                         image.Y -= Frames
                         Draw()
 
-
                     elif Direction[pygame.K_DOWN]:    # if the Down key was detected it moves the image 19 frames down
                         image.Y += Frames
                         Draw()
@@ -233,16 +253,9 @@ def main():
     
     clock = pygame.time.Clock()     # Initialized the clock to keep a specific frame rate
 
-    
-
     Run = Start_Screen()    # Creates the starting screen and waits for the user to start 
 
     Characters = []
-    Moved = False
-    
-    # new_position = random.randint(floor, Spaces) # Gets a random number from 0 - 15 
-
-    #new_character = Friends_Position((floor, floor),(floor, floor), floor) # Friends_Position (Current Position, Old Position, Image of friend)
 
     Row = random.randint(0,3)
     Col = random.randint(0,3)
@@ -287,10 +300,6 @@ def main():
 
         
         Draw()
-
-
-
-
 
 
     pygame.quit()  ## after player pressed the close window this command closes the window and the python code
