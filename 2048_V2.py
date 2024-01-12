@@ -92,7 +92,7 @@ def pause():
 
 def Game_Over():
 
-    Lost_text = FONT.render("Game Over", 1, "white")
+    Lost_text = FONT.render("Game Over: Press the Spacebar to restart", 1, "white")
     Window.blit(Lost_text,(WIDTH/2 - Lost_text.get_width()/2, Height/2 - Lost_text.get_height()/2))
     clock = pygame.time.Clock() 
     pygame.display.update()
@@ -109,7 +109,17 @@ def Game_Over():
         if Exit[pygame.K_SPACE]:
             return True
 
+def Reset_Game():
+    Image_Locations = [[0, 0, 0, 0],
+                   [0, 0, 0, 0],
+                   [0, 0, 0, 0],
+                   [0, 0, 0, 0]]
+    
+    Row = random.randint(0,3)
+    Col = random.randint(0,3)
 
+    new_character = Friends_Position(Row, Col, 2)     # (x-position, y-position, old x-position, old y-position, Image of friend)
+    Image_Locations[Row][Col] = new_character        # Stores the friend in an array where its [row][col] corresponde to its location on the grid
 
 def Draw():
     
@@ -261,9 +271,9 @@ def Add_Image():
         if Image_Locations[row][col] == 0:
             Image_Locations[row][col] = Friends_Position(row, col, 0)
             Open_Space = False
-            return True
+            return False
 
-    return False
+    return True
 
 def main():
     
@@ -299,7 +309,9 @@ def main():
         if key_input[pygame.K_DOWN] or key_input[pygame.K_UP] or key_input[pygame.K_LEFT] or key_input[pygame.K_RIGHT]:
             ADD = Game_Movement(key_input)
             if ADD:
-                Add_Image()
+                Game_Reset = Add_Image()
+                if Game_Reset:
+                    Game_Over()
 
         # Excape is pressed and pauses the game
         elif key_input[pygame.K_ESCAPE]:
