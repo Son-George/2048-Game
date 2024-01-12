@@ -217,8 +217,6 @@ def Game_Movement(key):
         Move_Friend(key)
                     
 
-
-    
 def Move_Friend(Direction):
     
     for row in Image_Locations[:]:              # iterates through each row of the image_location
@@ -261,6 +259,8 @@ def main():
     Col = random.randint(0,3)
 
     new_character = Friends_Position(Row, Col, 2)     # (x-position, y-position, old x-position, old y-position, Image of friend)
+    Image_Locations[0][0] = Friends_Position(0, 0, 3)
+    Image_Locations[3][3] = Friends_Position(3, 3, 1)
     Image_Locations[Row][Col] = new_character        # Stores the friend in an array where its [row][col] corresponde to its location on the grid
     Characters.append(new_character)
 
@@ -268,7 +268,7 @@ def main():
 
     while Run:
 
-        clock.tick(30)          # Runs 30 frames per second   clock.tick(Frames per second)
+        #clock.tick(30)          # Runs 30 frames per second   clock.tick(Frames per second)
 
         for event in pygame.event.get():   # pygame.event.get() gets any key pressed
             if event.type == pygame.QUIT:
