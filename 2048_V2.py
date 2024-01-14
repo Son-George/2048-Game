@@ -86,8 +86,6 @@ def pause():
             return True
         elif Exit[pygame.K_DELETE]:
             return False
-        
-
 
 
 def Game_Over():
@@ -107,6 +105,7 @@ def Game_Over():
             
         Exit =  pygame.key.get_pressed() # assign keys to store any key pressed
         if Exit[pygame.K_SPACE]:
+            Reset_Game()
             return True
 
 def Reset_Game():
@@ -117,12 +116,10 @@ def Reset_Game():
     Row = random.randint(0,3)
     Col = random.randint(0,3)
 
-    new_character = Friends_Position(Row, Col, 2)     # (x-position, y-position, old x-position, old y-position, Image of friend)
+    new_character = Friends_Position(Row, Col, 0)     # (x-position, y-position, old x-position, old y-position, Image of friend)
     Image_Locations[Row][Col] = new_character        # Stores the friend in an array where its [row][col] corresponde to its location on the grid
 
     Draw()
-
-
 
 
 def Draw(Direction = "Emp"):
@@ -166,8 +163,6 @@ def Draw(Direction = "Emp"):
                 if image != 0:
                     Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), (image.X, image.Y))
 
-
-
     pygame.display.update()
 
 
@@ -195,8 +190,6 @@ def Start_Screen():
             return False
 
 
-
-
 def Game_Movement(key):
 
     Image_Moved = False         # variable to check if an imaged moved
@@ -208,11 +201,13 @@ def Game_Movement(key):
             for col in range(4):
                 player = Image_Locations[row][col]
                 if player != 0:     # check if the position of the Image_location has an image
-                    Image_Moved = True
+                    #Image_Moved = True
                     player.Col = position       # moves the left most image to the left most position and goes through the row
                     position += 1               # since an image is already at the left most position we move one position to the right (+1)
                     Image_Locations[player.Row][player.Old_Col] = 0     # changes the image at this current [row][col] place to zero since the image moved to a different position
                     Image_Locations[player.Row][player.Col] = player    # moves the player/image to the new col position
+                    if player.Col != player.Old_Col:
+                        Image_Moved = True
 
     elif key[pygame.K_RIGHT]:         # Only moves the Col position the row position stays the same
         
@@ -221,11 +216,13 @@ def Game_Movement(key):
             for col in range(3, -1, -1):
                 player = Image_Locations[row][col]
                 if player != 0:     # check if the position of the Image_location has an image
-                    Image_Moved = True
+                    #Image_Moved = True
                     player.Col = position       # moves the left most image to the Right most position and goes through the row
                     position -= 1               # since an image is already at the Right most position we move one position to the left (-1)
                     Image_Locations[player.Row][player.Old_Col] = 0     # changes the image at this current [row][col] place to zero since the image moved to a different position
                     Image_Locations[player.Row][player.Col] = player    # moves the player/image to the new col position
+                    if player.Col != player.Old_Col:
+                        Image_Moved = True
 
     elif key[pygame.K_DOWN]:         # Only moves the Col position the row position stays the same
 
@@ -234,11 +231,13 @@ def Game_Movement(key):
             for row in range(3, -1, -1):
                 player = Image_Locations[row][col]
                 if player != 0:
-                    Image_Moved = True
+                    #Image_Moved = True
                     player.Row = position
                     position -= 1
                     Image_Locations[player.Old_Row][player.Col] = 0
                     Image_Locations[player.Row][player.Col] = player
+                    if player.Row != player.Old_Row:
+                        Image_Moved = True
 
     elif key[pygame.K_UP]:         # Only moves the Col position the row position stays the same
 
@@ -247,11 +246,14 @@ def Game_Movement(key):
             for row in range(4):
                 player = Image_Locations[row][col]
                 if player != 0:
-                    Image_Moved = True
+                    #Image_Moved = True
                     player.Row = position
                     position += 1
                     Image_Locations[player.Old_Row][player.Col] = 0
                     Image_Locations[player.Row][player.Col] = player
+                    if player.Row != player.Old_Row:
+                        Image_Moved = True
+
     if Image_Moved:
         Move_Friend(key)
         return True
@@ -284,22 +286,28 @@ def Move_Friend(Direction):
                         image.Y += Frames
                         Draw(Direction)
 
-        
+def Open_Space():# used to detect if there are free spaces on the board
+
+    for row in range(4):
+        for col in range(4):
+            if Image_Locations[row][col] == 0:
+                return True
+    return False
+   
 def Add_Image():
-    Open_Space = False
+    #Open_Space = False
 
-    for row in Image_Locations:
-        for image in row:
-            if image == 0:
-                Open_Space = True
-                break
-
-    while Open_Space:
+    #for row in range(4):
+        #for col in range(4):
+        #    if Image_Locations[row][col] == 0:
+        #        Open_Space = True
+        #        break
+    free = Open_Space()
+    while free:
         row = random.randint(0, 3)
         col = random.randint(0, 3)
         if Image_Locations[row][col] == 0:
-            Image_Locations[row][col] = Friends_Position(row, col, 0)
-            Open_Space = False
+            Image_Locations[row][col] = Friends_Position(row, col, 5)
             return False
 
     return True
@@ -337,12 +345,17 @@ def main():
         # Checks if an arrow key is pressed to move the friends
         if key_input[pygame.K_DOWN] or key_input[pygame.K_UP] or key_input[pygame.K_LEFT] or key_input[pygame.K_RIGHT]:
             ADD = Game_Movement(key_input)
-            if ADD:
+            OPEN = Open_Space()
+            if ADD and OPEN:
                 Game_Reset = Add_Image()
                 if Game_Reset:
                     Game_Over()
                 Draw()
                 time.sleep(0.3)
+            elif not OPEN:
+                Game_Over()
+                Draw()
+                time.sleep(0.1)
 
         # Excape is pressed and pauses the game
         elif key_input[pygame.K_ESCAPE]:
