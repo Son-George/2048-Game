@@ -122,22 +122,53 @@ def Reset_Game():
 
     Draw()
 
-def Draw():
-    
+
+
+
+def Draw(Direction = "Emp"):
+
     Window.blit(pygame.transform.scale(Background, (WIDTH, Height)), (floor,floor))
     Window.blit(pygame.transform.scale(Grid, (190*4, 190*4)), Tile_space[0][0])
 
+    if Direction == "Emp":
+        # Iterate through the array that contains 
+        for row in Image_Locations:
+            for image in row:
+                if image != 0:
+                    Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), (image.X, image.Y))
+
     # Iterate through the array that contains 
-    for col in Image_Locations:
-        for image in col:
-            if image != 0:
-                Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), (image.X, image.Y))
-         # Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), Tile_space[image.Row][image.Col])   # Tile_Space[Row][Col]
+    elif Direction[pygame.K_LEFT]:
+        for row in range(4):
+            for col in range(4):
+                image = Image_Locations[row][col]
+                if image != 0:
+                    Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), (image.X, image.Y))
+
+    elif Direction[pygame.K_RIGHT]:
+        for row in range(4):
+            for col in range(3, -1, -1):
+                image = Image_Locations[row][col]
+                if image != 0:
+                    Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), (image.X, image.Y))
+
+    elif Direction[pygame.K_UP]:
+        for col in range(4):
+            for row in range(4):
+                image = Image_Locations[row][col]
+                if image != 0:
+                    Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), (image.X, image.Y))
+
+    elif Direction[pygame.K_DOWN]:
+        for col in range(4):
+            for row in range(3, -1, -1):
+                image = Image_Locations[row][col]
+                if image != 0:
+                    Window.blit(pygame.transform.scale(Friend[image.Friend], Box_Size), (image.X, image.Y))
+
+
 
     pygame.display.update()
-
-
-
 
 
 def Start_Screen():
@@ -153,7 +184,6 @@ def Start_Screen():
     pygame.display.update()
 
     while True:
-
         for event in pygame.event.get():   # pygame.event.get() gets any key pressed
             if event.type == pygame.QUIT:
                 return False
@@ -183,8 +213,6 @@ def Game_Movement(key):
                     position += 1               # since an image is already at the left most position we move one position to the right (+1)
                     Image_Locations[player.Row][player.Old_Col] = 0     # changes the image at this current [row][col] place to zero since the image moved to a different position
                     Image_Locations[player.Row][player.Col] = player    # moves the player/image to the new col position
-                    
-
 
     elif key[pygame.K_RIGHT]:         # Only moves the Col position the row position stays the same
         
@@ -242,19 +270,19 @@ def Move_Friend(Direction):
                 for i in range(10 * Tiles_Moved):    # the loop iterates 10 times for one tile space and is multiplied by how many 
                     if Direction[pygame.K_LEFT]:     # if the left key was detected it moves the image 19 frames to the left
                         image.X -= Frames
-                        Draw()
+                        Draw(Direction)
 
                     elif Direction[pygame.K_RIGHT]:    # if the Right key was detected it moves the image 19 frames to the right
                         image.X += Frames
-                        Draw()
+                        Draw(Direction)
 
                     elif Direction[pygame.K_UP]:    # if the Up key was detected it moves the image 19 frames up
                         image.Y -= Frames
-                        Draw()
+                        Draw(Direction)
 
                     elif Direction[pygame.K_DOWN]:    # if the Down key was detected it moves the image 19 frames down
                         image.Y += Frames
-                        Draw()
+                        Draw(Direction)
 
         
 def Add_Image():
@@ -313,6 +341,8 @@ def main():
                 Game_Reset = Add_Image()
                 if Game_Reset:
                     Game_Over()
+                Draw()
+                time.sleep(0.3)
 
         # Excape is pressed and pauses the game
         elif key_input[pygame.K_ESCAPE]:
