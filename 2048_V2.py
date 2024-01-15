@@ -46,7 +46,7 @@ Friend = [pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Ga
         pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Alex_2.jpg").convert_alpha(),
         pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Gandalf_3.jpg").convert_alpha(),
         pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Kevin_4.jpg").convert_alpha(),
-        pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Adolf_5.jpg").convert_alpha(),
+        pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Adolf_Cup.jpg").convert_alpha(),
         pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Moy_6.jpg").convert_alpha(),
         pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Ferny_7.JPG").convert_alpha(),
         pygame.image.load("C:\\Users\\georg\\OneDrive\\Desktop\\Testing and Gaming in C++\\Python Games\\2048 Game\\Images\\Danny_8.jpg").convert_alpha(),
@@ -323,7 +323,7 @@ def main():
     Row = random.randint(0,3)
     Col = random.randint(0,3)
 
-    new_character = Friends_Position(Row, Col, 2)     # (x-position, y-position, old x-position, old y-position, Image of friend)
+    new_character = Friends_Position(Row, Col, 4)     # (x-position, y-position, old x-position, old y-position, Image of friend)
     Image_Locations[Row][Col] = new_character        # Stores the friend in an array where its [row][col] corresponde to its location on the grid
  
 
